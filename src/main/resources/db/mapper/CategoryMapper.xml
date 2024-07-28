@@ -1,0 +1,45 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.a2m.project.daos.CategoryDAO">
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.a2m.project.domains.Category" >
+        INSERT INTO category (name, description, create_at, update_at)
+        VALUES ( #{name}, #{description}, #{createAt},#{updateAt} );
+    </insert>
+
+    <update id="update" parameterType="com.a2m.project.domains.Category">
+        UPDATE category SET name = #{name}, description= #{description}, update_at= #{updateAt} WHERE id = #{id};
+    </update>
+
+    <delete id="deleteCategoryById" parameterType="long">
+        DELETE from category WHERE id = #{id};
+    </delete>
+
+    <select id="selectAllCategory" parameterType="map" resultType="map">
+        SELECT
+            c.id,
+            c.name,
+            c.description,
+            COUNT(p.id) AS totalProduct,
+            c.create_at AS createAt,
+            c.update_at AS updateAt
+        FROM category c
+        LEFT JOIN product p ON c.id = p.category_id
+        WHERE (#{keyword} IS NULL OR c.name LIKE CONCAT('%', #{keyword} , '%'))
+        GROUP BY c.id, c.name, c.description, c.create_at, c.update_at;
+    </select>
+
+    <select id="selectCategoryById" parameterType="long" resultType="map">
+        SELECT
+            c.id,
+            c.name,
+            c.description,
+            COUNT(p.id) AS totalProduct,
+            c.create_at AS createAt,
+            c.update_at AS updateAt
+        FROM category c
+        LEFT JOIN product p ON c.id = p.category_id
+        WHERE c.id = #{id}
+        GROUP BY c.id, c.name, c.description, c.create_at, c.update_at;
+    </select>
+</mapper>

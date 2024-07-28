@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="Truong Xuan Giang">
+        <preConditions>
+            <not>
+                <tableExists tableName="product" />
+            </not>
+        </preConditions>
+        <createTable tableName="product">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="double">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="category_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Truong Xuan Giang">
+        <preConditions>
+            <not>
+                <tableExists tableName="category" />
+            </not>
+        </preConditions>
+        <createTable tableName="category">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="Truong Xuan Giang">
+        <addForeignKeyConstraint
+                baseTableName="product"
+                baseColumnNames="category_id"
+                constraintName="fk_product_category"
+                referencedTableName="category"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+
+    <changeSet id="4" author="Truong Xuan Giang">
+        <addColumn tableName="category">
+            <column name="description" type="varchar(255)"/>
+            <column name="create_at" type="timestamp"/>
+            <column name="update_at" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="5" author="Truong Xuan Giang">
+        <addColumn tableName="product">
+            <column name="code" type="varchar(50)">
+                <constraints unique="true"/>
+            </column>
+            <column name="create_at" type="timestamp"/>
+            <column name="update_at" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

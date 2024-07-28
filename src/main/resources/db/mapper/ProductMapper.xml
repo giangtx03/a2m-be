@@ -1,0 +1,63 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.a2m.project.daos.ProductDAO">
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.a2m.project.domains.Product" >
+        INSERT INTO product (name,code, price, description, category_id, create_at, update_at)
+        VALUES ( #{name},#{code}, #{price}, #{description}, #{category.id}, #{createAt}, #{updateAt});
+    </insert>
+
+    <update id="update" parameterType="com.a2m.project.domains.Product">
+        UPDATE product SET
+            name = #{name},
+            price= #{price},
+            description= #{description},
+            category_id=#{category.id},
+            update_at=#{updateAt}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="deleteProductById" parameterType="long">
+        DELETE from product WHERE id = #{id};
+    </delete>
+
+    <select id="selectAllProduct" parameterType="map" resultType="map">
+        SELECT
+            p.id,
+            p.name,
+            p.code,
+            p.price,
+            p.description,
+            p.category_id AS categoryId,
+            p.create_at AS createAt,
+            p.update_at AS updateAt
+        FROM product p
+        WHERE (#{categoryId} IS NULL OR #{categoryId} = 0 OR p.category_id = #{categoryId})
+        AND (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.code, '')) LIKE CONCAT('%', #{keyword}, '%'));
+    </select>
+
+    <select id="selectProductById" parameterType="long" resultType="map">
+        SELECT
+            id ,
+            name,
+            code,
+            price,
+            description,
+            category_id as categoryId,
+            create_at as createAt,
+            update_at as updateAt
+        FROM product WHERE id = #{id};
+    </select>
+    <select id="selectProductsByCategoryId" parameterType="long" resultType="map">
+        SELECT
+            p.id ,
+            p.name,
+            p.code,
+            p.price,
+            p.description,
+            p.create_at as createAt,
+            p.update_at as updateAt
+        FROM product
+        WHERE category_id = #{categoryId};
+    </select>
+</mapper>
