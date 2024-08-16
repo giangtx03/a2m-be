@@ -33,7 +33,7 @@
             p.update_at AS updateAt
         FROM product p
         WHERE (#{categoryId} IS NULL OR #{categoryId} = 0 OR p.category_id = #{categoryId})
-        AND (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.code, '')) LIKE CONCAT('%', #{keyword}, '%'));
+        AND (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.code, '')) LIKE CONCAT('%', #{keyword}, '%'))
     </select>
 
     <select id="selectProductById" parameterType="long" resultType="map">

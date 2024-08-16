@@ -2,13 +2,17 @@ package com.a2m.project.services.impl;
 
 import com.a2m.project.daos.CategoryDAO;
 import com.a2m.project.domains.Category;
+import com.a2m.project.dtos.responses.ListResponse;
 import com.a2m.project.mapper.CategoryMapper;
 import com.a2m.project.services.CategoryService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +22,19 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryDAO categoryDAO;
     @Override
-    public List<Category> getAll(String keyword) {
+    public ListResponse getAll(String keyword, int pageNumber, int limit) {
+        PageHelper.startPage(pageNumber, limit);
         List<Map<String, Object>> list = categoryDAO.selectAllCategory(keyword);
-        return list.stream().map(CategoryMapper::toCategory)
+
+        List<Category> categories = list.stream().map(CategoryMapper::toCategory)
                 .toList();
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+
+        return ListResponse.builder()
+                .items(categories)
+                .totalItems(pageInfo.getTotal())
+                .totalPages(pageInfo.getPages())
+                .build();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.a2m.project.controllers.publics;
 
 import com.a2m.project.domains.Category;
+import com.a2m.project.dtos.responses.ListResponse;
 import com.a2m.project.dtos.responses.ResponseData;
 import com.a2m.project.services.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +22,16 @@ public class PublicCategoryController {
 
     @GetMapping
     public ResponseEntity<ResponseData> getAllCategories(
-            @RequestParam("keyword") @Nullable String keyword
+            @RequestParam("keyword") @Nullable String keyword,
+            @RequestParam(name = "page_number",defaultValue = "1") int pageNumber,
+            @RequestParam(name = "limit",defaultValue = "10") int limit
     ){
 
-        List<Category> categories = categoryService.getAll(keyword);
+        ListResponse listResponse = categoryService.getAll(keyword, pageNumber, limit);
         ResponseData response = ResponseData.builder()
                 .status(HttpStatus.ACCEPTED)
                 .message("Danh sách categories")
-                .data(categories)
+                .data(listResponse)
                 .build();
 
         return ResponseEntity.ok().body(response);

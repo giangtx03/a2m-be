@@ -2,17 +2,14 @@ package com.a2m.project.controllers.publics;
 
 import com.a2m.project.domains.Product;
 import com.a2m.project.dtos.requests.ProductRequest;
+import com.a2m.project.dtos.responses.ListResponse;
 import com.a2m.project.dtos.responses.ResponseData;
 import com.a2m.project.services.ProductService;
-import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("public/${api.prefix}/products")
@@ -24,14 +21,16 @@ public class PublicProductController {
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam("keyword") @Nullable String keyword,
-            @RequestParam("category_id") @Nullable Long categoryId
+            @RequestParam("category_id") @Nullable Long categoryId,
+            @RequestParam(name = "page_number",defaultValue = "1") int pageNumber,
+            @RequestParam(name = "limit",defaultValue = "10") int limit
     ){
-        List<Product> products = productService.getAll(keyword,categoryId);
-        PageInfo<Product> pageInfo = new PageInfo<>(products);
+        ListResponse listResponse = productService.getAll(keyword,categoryId, pageNumber, limit);
+
         ResponseData response = ResponseData.builder()
                 .status(HttpStatus.ACCEPTED)
                 .message("Danh sách sản phẩm")
-                .data(products)
+                .data(listResponse)
                 .build();
         return ResponseEntity.ok().body(response);
     }

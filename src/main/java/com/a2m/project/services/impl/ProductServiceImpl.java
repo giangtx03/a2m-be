@@ -5,10 +5,12 @@ import com.a2m.project.daos.ProductDAO;
 import com.a2m.project.domains.Category;
 import com.a2m.project.domains.Product;
 import com.a2m.project.dtos.requests.ProductRequest;
+import com.a2m.project.dtos.responses.ListResponse;
 import com.a2m.project.mapper.CategoryMapper;
 import com.a2m.project.mapper.ProductMapper;
 import com.a2m.project.services.ProductService;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -25,14 +27,21 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryDAO categoryDAO;
 
     @Override
-    public List<Product> getAll(String keyword, Long categoryId) {
-        PageHelper.startPage(2,2);
+    public ListResponse getAll(String keyword, Long categoryId, int pageNumber, int limit) {
+        PageHelper.startPage(pageNumber,limit);
         List<Map<String, Object>> list = productDAO.selectAllProduct(keyword, categoryId);
 
-        return list.stream().map(item -> {
+        List<Product> products =  list.stream().map(item -> {
             Category category = CategoryMapper.toCategory(categoryDAO.selectCategoryById(Long.parseLong(item.get("categoryId").toString())));
             return ProductMapper.toProduct(item, category);
         }).toList();
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+
+        return ListResponse.builder()
+                .totalItems(pageInfo.getTotal())
+                .items(products)
+                .totalPages(pageInfo.getPages())
+                .build();
     }
 
     @Override
